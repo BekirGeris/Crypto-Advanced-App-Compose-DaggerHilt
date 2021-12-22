@@ -37,7 +37,7 @@ fun CryptoDetailScreen(
     viewModel: CryptoDetailViewModel = hiltViewModel()
 ) {
 
-    //Step 1 -> Wrong
+    /*Step 1 -> Wrong  -- side effect
     val scope = rememberCoroutineScope()
 
     var cryptoItem by remember {
@@ -48,7 +48,24 @@ fun CryptoDetailScreen(
         cryptoItem = viewModel.getCrypto(id)
         println(cryptoItem.data)
     }
+     */
 
+    /* step 2 -> better
+    var cryptoItem by remember {
+        mutableStateOf<Resource<Crypto>>(Resource.Loading())
+    }
+
+    LaunchedEffect(key1 = Unit){
+        cryptoItem = viewModel.getCrypto(id)
+        println(cryptoItem.data)
+    }
+     */
+
+    // step 3
+    val cryptoItem = produceState<Resource<Crypto>>(initialValue = Resource.Loading()){
+        value = viewModel.getCrypto(id)
+    }.value
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
